@@ -9,8 +9,7 @@
         {
             "name":     "Pavel Buchnev",
             "email":    "butschster@gmail.com",
-            "homepage": "http://www.kodicms.ru/",
-            "role":     "developer"
+            "homepage": "http://www.kodicms.ru/"
         }
     ],
     "support": {
@@ -18,7 +17,12 @@
         "forum":    "http://www.kodicms.ru/forum",
         "source":   "https://github.com/KodiComponents/module-plugins"
     },
+    "autoload": {
+        "psr-4": {
+            "KodiCMS\\Plugins\\": "src/"
+        }
+    },
     "require": {
-        "kodicms/core": "dev-master"
+        "kodicms/module-loader": "3.*"
     }
 }
