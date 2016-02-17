@@ -9,6 +9,7 @@ use KodiCMS\Plugins\Loader\PluginInstaller;
 use KodiCMS\Plugins\Console\Commands\PluginsListCommand;
 use KodiCMS\Plugins\Console\Commands\PluginActivateCommand;
 use KodiCMS\Plugins\Console\Commands\PluginDeactivateCommand;
+use KodiCMS\Plugins\Facades\PluginLoader as PluginLoaderFacade;
 
 class PluginServiceProvider extends ServiceProvider
 {
@@ -27,7 +28,7 @@ class PluginServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerAliases([
-            'PluginLoader' => \KodiCMS\Support\Facades\PluginLoader::class,
+            'PluginLoader' => PluginLoaderFacade::class,
         ]);
 
         $this->app->singleton('plugin.installer', function ($app) {
