@@ -3,13 +3,14 @@
 namespace KodiCMS\Plugins\Loader;
 
 use CMS;
+use KodiCMS\CMS\Contracts\SettingsInterface;
 use KodiCMS\Plugins\Model\Plugin;
 use KodiCMS\Support\Traits\Settings;
 use KodiCMS\Support\Loader\ModuleContainer;
 use KodiCMS\Plugins\Exceptions\PluginContainerException;
 use KodiCMS\Support\Facades\PluginLoader as PluginLoaderFacade;
 
-abstract class BasePluginContainer extends ModuleContainer
+abstract class BasePluginContainer extends ModuleContainer implements SettingsInterface
 {
     use Settings;
 

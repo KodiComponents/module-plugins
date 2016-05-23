@@ -1,5 +1,5 @@
 <script id="plugin-item" type="text/template">
-	<td class="plugin-name" <% if (!isInstallable) { %>colspan="@if (acl_check('plugins.change_status')) 3 @else 2 @endif "<% } %>>
+	<td class="plugin-name" <% if (!isInstallable) { %>colspan="@can('plugin.change_status')) 3 @else 2 @endcan "<% } %>>
 		<% if (!isInstallable) { %>
 		<div class="alert alert-danger alert-dark padding-xs">
 			<%= i18n.t('plugins.core.messages.not_installable', {
@@ -10,13 +10,13 @@
 		<% } %>
 
 		<% if (isActivated && settings_template) { %>
-		@if (acl_check('plugins.settings'))
+		@can('plugin.view_settings')
 
 		<a href="<%= settingsUrl %>" class="btn btn-default btn-sm pull-right btn-labeled">
 			<span class="hidden-xs hidden-sm btn-labeled" data-icon="cog">@lang('plugins::core.button.settings')</span>
 		</a>
 
-		@endif
+		@endcan
 		<% } %>
 
 		<h5 class="pull-left" <% if (icon) { %>data-icon="<%= icon %> fa-lg"<% } %>>
@@ -35,11 +35,11 @@
 		</small>
 		<% } %>
 	</td>
-	@if (acl_check('plugins.change_status'))
+	@can('plugin.change_status')
 	<% if (isInstallable) { %>
 	<td class="plugin-status text-center">
 		{!! Form::button('', ['class' => 'change-status btn btn-default btn-sm']) !!}
 	</td>
 	<% } %>
-	@endif
+	@endcan
 </script>
