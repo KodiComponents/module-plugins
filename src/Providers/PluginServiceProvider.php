@@ -49,24 +49,4 @@ class PluginServiceProvider extends ServiceProvider
             PluginDeactivateCommand::class,
         ]);
     }
-
-    public function boot()
-    {
-        \Event::listen('config.loaded', function () {
-            $this->registerNavigation();
-        }, 999);
-    }
-
-    protected function registerNavigation()
-    {
-        \Navigation::setFromArray([
-            [
-                'id' => 'plugins',
-                'title' => 'plugins::core.title',
-                'icon' => 'puzzle-piece',
-                'url' => route('backend.plugins.list'),
-                'priority' => 9999999,
-            ],
-        ]);
-    }
 }
