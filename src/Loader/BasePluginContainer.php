@@ -4,6 +4,8 @@ namespace KodiCMS\Plugins\Loader;
 
 use CMS;
 use KodiCMS\CMS\Contracts\SettingsInterface;
+use KodiCMS\Plugins\Events\PluginActivated;
+use KodiCMS\Plugins\Events\PluginDeactivated;
 use KodiCMS\Plugins\Model\Plugin;
 use KodiCMS\Support\Traits\Settings;
 use KodiCMS\Support\Loader\ModuleContainer;
@@ -208,8 +210,8 @@ abstract class BasePluginContainer extends ModuleContainer implements SettingsIn
 
         app('plugin.installer')->installSchemas($this->getSchemasPath());
 
-        event('plugin.activate', [$this->getName()]);
-
+        event(new PluginActivated($this->getName()));
+        
         $this->isActivated = true;
 
         return true;
@@ -237,7 +239,7 @@ abstract class BasePluginContainer extends ModuleContainer implements SettingsIn
             app('plugin.installer')->dropSchemas($this->getSchemasPath());
         }
 
-        event('plugin.deactivate', [$this->getName()]);
+        event(new PluginDeactivated($this->getName()));
 
         $this->isActivated = false;
 
