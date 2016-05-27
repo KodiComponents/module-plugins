@@ -2,10 +2,9 @@
 
 namespace KodiCMS\Plugins\Providers;
 
-use KodiCMS\Plugins\Events\PluginActivated;
-use KodiCMS\Plugins\Events\PluginDeactivated;
-use KodiCMS\Support\ServiceProvider;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use KodiCMS\Support\ServiceProvider;
+use KodiCMS\Users\Model\Permission;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -15,8 +14,8 @@ class ModuleServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        PluginActivated::class => [],
-        PluginDeactivated::class => []
+        \KodiCMS\Plugins\Events\PluginActivated::class => [],
+        \KodiCMS\Plugins\Events\PluginDeactivated::class => [],
     ];
 
     /**
@@ -26,6 +25,11 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        Permission::register('plugins', 'plugin', [
+            'change_status',
+            'list',
+            'view_settings',
+        ]);
     }
 
     /**
@@ -49,6 +53,7 @@ class ModuleServiceProvider extends ServiceProvider
                 'icon' => 'puzzle-piece',
                 'url' => route('backend.plugins.list'),
                 'priority' => 9999999,
+                'permissions' => 'plugin::list'
             ],
         ]);
     }

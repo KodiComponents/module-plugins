@@ -11,16 +11,13 @@ class PluginController extends Controller
 {
     public function getList()
     {
-        if (! acl_check('backend.plugins.list')) {
+        if (! acl_check('plugins::list')) {
             throw new PermissionException('backend.plugins.list');
         }
 
-        $plugins = [];
-        foreach (PluginLoader::findPlugins() as $plugin) {
-            $plugins[] = $plugin->toArray();
-        }
-
-        $this->setContent($plugins);
+        $this->setContent(
+            PluginLoader::findPlugins()->toArray()
+        );
     }
 
     /**
@@ -28,8 +25,8 @@ class PluginController extends Controller
      */
     public function changeStatus()
     {
-        if (! acl_check('plugins.change_status')) {
-            throw new PermissionException('plugins.change_status');
+        if (! acl_check('plugins::change_status')) {
+            throw new PermissionException('plugins::change_status');
         }
 
         $name = $this->getRequiredParameter('name');
