@@ -3,9 +3,10 @@
 namespace KodiCMS\Plugins\Loader;
 
 use Artisan;
-use ModulesLoader;
-use KodiCMS\Plugins\Model\Plugin;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
+use KodiCMS\Plugins\Model\Plugin;
+use ModulesLoader;
 
 class PluginLoader
 {
@@ -27,14 +28,14 @@ class PluginLoader
     protected $init = false;
 
     /**
-     * @var array
+     * @var BasePluginContainer[]|Collection
      */
-    protected $activated = [];
+    protected $activated;
 
     /**
-     * @var array
+     * @var BasePluginContainer[]|Collection
      */
-    protected $foundPlugins = [];
+    protected $plugins;
 
     /**
      * @param Filesystem $files
@@ -44,6 +45,8 @@ class PluginLoader
     {
         $this->path = $path;
         $this->files = $files;
+        $this->plugins = new Collection();
+        $this->activated = new Collection();
     }
 
     /**
@@ -60,12 +63,14 @@ class PluginLoader
             return;
         }
 
+        $this->findPlugins();
         $this->loadActivated();
+
         $this->init = true;
     }
 
     /**
-     * @return array
+     * @return Collection|BasePluginContainer[]
      */
     public function getActivated()
     {
@@ -73,7 +78,7 @@ class PluginLoader
     }
 
     /**
-     * @return array
+     * @return Collection|BasePluginContainer[]
      */
     public function findPlugins()
     {
@@ -83,27 +88,23 @@ class PluginLoader
                     continue;
                 }
 
-                $this->foundPlugins[] = $class;
+                $this->plugins->push($class);
             }
         }
 
-        return $this->foundPlugins;
+        return $this->plugins;
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return null|BasePluginContainer
      */
     public function getPluginContainer($name)
     {
-        foreach ($this->findPlugins() as $plugin) {
-            if ($plugin->getName() == $name) {
-                return $plugin;
-            }
-        }
-
-        return;
+        return $this->plugins->filter(function (BasePluginContainer $plugin) use ($name) {
+            return $plugin->getName() == $name;
+        })->first();
     }
 
     /**
@@ -113,13 +114,9 @@ class PluginLoader
      */
     public function isActivated($name)
     {
-        foreach ($this->getActivated() as $plugin) {
-            if ($plugin->getName() == $name) {
-                return true;
-            }
-        }
-
-        return false;
+        return ! $this->getActivated()->filter(function (BasePluginContainer $plugin) use ($name) {
+            return $plugin->getName() == $name;
+        })->isEmpty();
     }
 
     /**
@@ -138,7 +135,7 @@ class PluginLoader
             }
 
             $plugin->checkActivation();
-            $this->activated[get_class($plugin)] = $plugin;
+            $this->activated->put(get_class($plugin), $plugin);
         }
 
         return $status;
@@ -161,7 +158,7 @@ class PluginLoader
             }
 
             $plugin->checkActivation();
-            unset($this->activated[get_class($plugin)]);
+            $this->activated->offsetUnset(get_class($plugin));
         }
 
         return $status;
@@ -192,21 +189,27 @@ class PluginLoader
     }
 
     /**
-     * @return mixed
+     * @return Collection|BasePluginContainer[]
      */
     protected function loadActivated()
     {
-        $activated = Plugin::get();
-
-        foreach ($activated as $model) {
-            if ($this->files->isDirectory($model->path) and ! is_null($pluginContainer = $this->initPlugin($model->path))) {
-                $this->activated[get_class($pluginContainer)] = $pluginContainer;
-                ModulesLoader::registerModule($pluginContainer);
-
-                $pluginContainer->checkActivation();
-                $pluginContainer->setSettings($model->settings);
+        Plugin::get()->filter(function (Plugin $model) {
+            return $this->files->isDirectory($model->path);
+        })->each(function (Plugin $model) {
+            /** @var BasePluginContainer $pluginContainer */
+            if (is_null($pluginContainer = $this->initPlugin($model->path))) {
+                return;
             }
-        }
+
+            $this->activated->put(get_class($pluginContainer), $pluginContainer);
+
+            ModulesLoader::registerModule($pluginContainer);
+
+            $pluginContainer->checkActivation();
+            $pluginContainer->setSettings($model->settings);
+        });
+
+        return $this->activated;
     }
 
     /**
