@@ -34,7 +34,7 @@ class PluginsListCommand extends Command
     {
         $modules = [];
 
-        foreach (PluginLoader::findPlugins() as $module) {
+        foreach (PluginLoader::getPlugins() as $module) {
             $modules[] = [
                 $module->getName().' ['.get_class($module).']',
                 '',

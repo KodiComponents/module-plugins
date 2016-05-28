@@ -2,16 +2,14 @@
 
 namespace KodiCMS\Plugins\Http\Controllers;
 
-use Meta;
-use PluginLoader;
-use KodiCMS\Plugins\Loader\BasePluginContainer;
 use KodiCMS\CMS\Http\Controllers\System\BackendController;
+use KodiCMS\Plugins\Loader\BasePluginContainer;
+use PluginLoader;
 
 class PluginController extends BackendController
 {
     public function getIndex()
     {
-        Meta::loadPackage('backbone');
         $this->setContent('list');
     }
 
@@ -23,11 +21,9 @@ class PluginController extends BackendController
     public function getSettings($pluginId)
     {
         $plugin = $this->getPlugin($pluginId);
-        $this->setTitle(
-            trans($this->wrapNamespace('core.plugin_settings_page'), [
-                'title' => $plugin->getTitle(),
-            ])
-        );
+        $this->setTitle(trans($this->wrapNamespace('core.plugin_settings_page'), [
+            'title' => $plugin->getTitle(),
+        ]));
 
         $settingsTemplate = $plugin->getSettingsTemplate();
 
@@ -47,10 +43,9 @@ class PluginController extends BackendController
 
         $plugin->saveSettings($settings);
 
-        return $this->smartRedirect([], 'backend.plugins.list')
-            ->with('success', trans($this->wrapNamespace('core.messages.settings_saved'), [
-                'title' => $plugin->getTitle(),
-            ]));
+        return $this->smartRedirect([], 'backend.plugins.list')->with('success', trans($this->wrapNamespace('core.messages.settings_saved'), [
+            'title' => $plugin->getTitle(),
+        ]));
     }
 
     /**

@@ -10,7 +10,6 @@ use KodiCMS\Plugins\Model\Plugin;
 use KodiCMS\Support\Traits\Settings;
 use KodiCMS\Support\Loader\ModuleContainer;
 use KodiCMS\Plugins\Exceptions\PluginContainerException;
-use KodiCMS\Support\Facades\PluginLoader as PluginLoaderFacade;
 
 abstract class BasePluginContainer extends ModuleContainer implements SettingsInterface
 {
@@ -60,7 +59,6 @@ abstract class BasePluginContainer extends ModuleContainer implements SettingsIn
         }
 
         $this->isInstallable = $this->checkPluginVersion();
-        $this->isActivated = in_array($this, PluginLoaderFacade::getActivated());
 
         $this->setSettings($this->defaultSettings());
     }
@@ -72,6 +70,21 @@ abstract class BasePluginContainer extends ModuleContainer implements SettingsIn
     {
         return [];
     }
+
+    /**
+     * @return string
+     */
+    public function getInfo()
+    {
+        return [
+            'version' => $this->getVersion(),
+            'description' => $this->getDescription(),
+            'authors' => [[
+                'name' => $this->getAuthor()
+            ]]
+        ];
+    }
+
 
     /**
      * @return string
@@ -140,6 +153,7 @@ abstract class BasePluginContainer extends ModuleContainer implements SettingsIn
      */
     public function isActivated()
     {
+        $this->checkActivation();
         return $this->isActivated;
     }
 
@@ -180,7 +194,7 @@ abstract class BasePluginContainer extends ModuleContainer implements SettingsIn
      */
     public function checkActivation()
     {
-        return $this->isActivated = in_array($this, PluginLoaderFacade::getActivated());
+        return $this->isActivated = \PluginLoader::isActivated($this->getName());
     }
 
     /**
@@ -265,7 +279,7 @@ abstract class BasePluginContainer extends ModuleContainer implements SettingsIn
      */
     protected function checkPluginVersion()
     {
-        return version_compare(CMS::VERSION, $this->getRequiredVersion(), '>=');
+        return version_compare(CMS::getVersion(), $this->getRequiredVersion(), '>=');
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace KodiCMS\Plugins\Http\Controllers\API;
 
-use KodiCMS\Plugins\Exceptions\PluginContainerException;
-use PluginLoader;
 use KodiCMS\API\Exceptions\PermissionException;
 use KodiCMS\API\Http\Controllers\System\Controller;
+use KodiCMS\Plugins\Exceptions\PluginContainerException;
+use PluginLoader;
 
 class PluginController extends Controller
 {
@@ -15,9 +15,7 @@ class PluginController extends Controller
             throw new PermissionException('backend.plugins.list');
         }
 
-        $this->setContent(
-            PluginLoader::findPlugins()->toArray()
-        );
+        $this->setContent(PluginLoader::getPlugins()->toArray());
     }
 
     /**

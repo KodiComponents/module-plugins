@@ -72,27 +72,17 @@ class PluginLoader
     /**
      * @return Collection|BasePluginContainer[]
      */
-    public function getActivated()
+    public function getPlugins()
     {
-        return $this->activated;
+        return $this->plugins;
     }
 
     /**
      * @return Collection|BasePluginContainer[]
      */
-    public function findPlugins()
+    public function getActivated()
     {
-        foreach ($this->files->directories($this->getPath()) as $directory) {
-            foreach ($this->files->directories($directory) as $plugin) {
-                if (is_null($class = $this->initPlugin($plugin))) {
-                    continue;
-                }
-
-                $this->plugins->push($class);
-            }
-        }
-
-        return $this->plugins;
+        return $this->activated;
     }
 
     /**
@@ -150,7 +140,9 @@ class PluginLoader
     public function deactivatePlugin($name, $removeTable = false)
     {
         $status = false;
+
         if ($this->isActivated($name) and ! is_null($plugin = $this->getPluginContainer($name))) {
+
             $status = $plugin->deactivate($removeTable);
 
             if (app()->routesAreCached()) {
@@ -176,6 +168,7 @@ class PluginLoader
 
         $namespace = "Plugins\\{$vendorName}\\{$pluginName}";
         $class = "{$namespace}\\PluginContainer";
+
 
         if (! class_exists($class)) {
             return;
@@ -211,7 +204,6 @@ class PluginLoader
 
         return $this->activated;
     }
-
     /**
      * @param string $key
      *
@@ -220,5 +212,23 @@ class PluginLoader
     protected function pluginExists($key)
     {
         return $this->files->isDirectory($this->path.DIRECTORY_SEPARATOR.$key);
+    }
+
+    /**
+     * @return Collection|BasePluginContainer[]
+     */
+    protected function findPlugins()
+    {
+        foreach ($this->files->directories($this->getPath()) as $directory) {
+            foreach ($this->files->directories($directory) as $plugin) {
+                if (is_null($class = $this->initPlugin($plugin))) {
+                    continue;
+                }
+
+                $this->plugins->push($class);
+            }
+        }
+
+        return $this->plugins;
     }
 }
