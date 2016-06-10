@@ -4,6 +4,22 @@ namespace KodiCMS\Plugins\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * KodiCMS\Plugins\Model\Plugin
+ *
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property integer $id
+ * @property string $name
+ * @property string $path
+ * @property string $settings
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Plugins\Model\Plugin whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Plugins\Model\Plugin whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Plugins\Model\Plugin whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Plugins\Model\Plugin whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Plugins\Model\Plugin wherePath($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Plugins\Model\Plugin whereSettings($value)
+ */
 class Plugin extends Model
 {
     /**
